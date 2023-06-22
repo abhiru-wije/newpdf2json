@@ -1,6 +1,6 @@
 import streamlit as st
-import pandas as pd
 from nanonets import NANONETSOCR
+import io
 
 
 def process_file(uploaded_file):
@@ -11,33 +11,32 @@ def process_file(uploaded_file):
     extracted_text = []
     for item in value1:
         if 'text' in item:
-                extracted_text.append({'key': item['text']})
-
-    print(extracted_text)
-
+            extracted_text.append({'key': item['text']})
     value = pred_json['results'][0]['page_data'][0]['raw_text']
-    print(value)
-    return extracted_text, value
-    
+
+    my_string = ' '.join(str(item) for item in extracted_text)
+
+    converted_text = my_string + "\n" + value
+    return converted_text
 
 
 st.title('PDF to JSON Converter')
 
 uploaded_file = st.file_uploader("Choose a file", type='pdf')
 if uploaded_file is not None:
-    file_details = {"FileName":uploaded_file.name,"FileType":uploaded_file.type,"FileSize":uploaded_file.size}
+    file_details = {"FileName": uploaded_file.name,
+                    "FileType": uploaded_file.type, "FileSize": uploaded_file.size}
     st.write(file_details)
     result = process_file(uploaded_file)
     st.write(result)
-    
 
-    # def generate_text():
-    #     content_string = " ".join(result)
-    #     temp_file = tempfile.NamedTemporaryFile(delete=False)
-    #     temp_file.write(string_list.encode())
-    #     temp_file.close()
-    #     return temp_file.name
-    
-    # file_path = generate_text()
+    def generate_text():
+        bytes_io = io.BytesIO()
+        bytes_io.write(result.encode())
+        bytes_io.seek(0)
+        return bytes_io
 
-    # st.download_button("Download Text File", file_path, file_name="output.txt")
+if st.button("Download Text File"):
+    bytes_io = generate_text()
+    st.download_button("Download", bytes_io,
+                       file_name="output.txt", mime="text/plain")
