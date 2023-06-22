@@ -4,10 +4,9 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-nanonets = "2.0.5"
+nanonets = "*"
 
 [dev-packages]
-nanonets = "==2.0.5"
 
 [requires]
-python_version = "3.10"
+python_version = "3.8"
