@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 
 [dev-packages]
-ocr-nanonets-wrapper = "==1.0"
+nanonets = "+=2.0.5"
 
 
 [requires]
